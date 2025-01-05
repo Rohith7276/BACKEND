@@ -1,7 +1,7 @@
 //this is a util function to handle async functions in express
-const asyncHandler = (reqestHandler) => {
-    (req, res, next) =>{
-        Promise.resolve(reqestHandler(req, res, next)).catch((err)=> next(err))
+const asyncHandler = (requestHandler) => {
+    return (req, res, next) =>{
+        Promise.resolve(requestHandler(req, res, next)).catch((err)=> next(err))
     }
 }
 
