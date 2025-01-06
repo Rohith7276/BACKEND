@@ -21,5 +21,10 @@ app.use(express.static("public"))
 //this is used to store secured information in user browser which is only accessible by our server
 app.use(cookieParser()) 
 
+//routes import
+import userRouter from "./routes/user.routes.js"
+
+//routes declaration
+app.use("/api/v1/users", userRouter)
 
 export {app}
