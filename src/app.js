@@ -25,6 +25,7 @@ app.use(cookieParser())
 import userRouter from "./routes/user.routes.js"
 
 //routes declaration
+//the user routing starts from here as a middleware use is used
 app.use("/api/v1/users", userRouter)
 
 export {app}
