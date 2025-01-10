@@ -1,8 +1,9 @@
 // In here we are creating a custom error class that extends the Error class
+//Bassically we are creating an error called ApiError 
 class ApiError extends Error {
     constructor(
         statusCode,
-        message= "Something went wrong",
+        message= "Something went wrong in api",
         errors = [],
         stack = ""
     ){
