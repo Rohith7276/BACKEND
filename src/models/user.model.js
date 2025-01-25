@@ -2,6 +2,8 @@ import mongoose, {Schema} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
+//user du authentication work is done in here which includes jwt encrypt bcrypt user models token generation
+
 const userSchema = new Schema(
     {
         username: {
@@ -68,6 +70,7 @@ userSchema.pre("save", async function (next) {
 //this method is used to check if the password is correct by decrypting the password
 //this is an instance provided by mongoose
 userSchema.methods.isPasswordCorrect = async function(password){
+    //only bcrypt can compare the encrypted password
     return await bcrypt.compare(password, this.password)
 }
 
@@ -96,5 +99,6 @@ userSchema.methods.generateRefreshToken = function(){
         }
     )
 }
+
 
 export const User = mongoose.model("User", userSchema)
