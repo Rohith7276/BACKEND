@@ -20,9 +20,10 @@ router.route("/register").post(
     registerUser
 )
 
+//here we are setting routes (same as fetch function in react)
 router.route("/login").post(loginUser)
 
-//securedroutes
+//secured routes (verifyJWT is a middleware which verifies jwt and even gives access to the user to logoutUser function)
 router.route("/logout").post(verifyJWT, logoutUser)
 
 router.route("/refresh-token").post(refreshAccessToken)

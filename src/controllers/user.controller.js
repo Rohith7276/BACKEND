@@ -178,7 +178,7 @@ const refreshAccessToken = asyncHandler(async(req, res) =>{
         throw new ApiError(401, "Unauthorized")
     }
 
-try {
+    try {
         const decodedToken = jwt.verify(
             incomingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
@@ -203,9 +203,9 @@ try {
         .cookie("refreshToken", refreshToken, option)
         .json(new ApiResponse(200, {accessToken, refreshToken}, "Token refreshed successfully"))
     
-} catch (error) {
-    throw new ApiError(401, "Invalid refresh token")    
-}
+    } catch (error) {
+        throw new ApiError(401, "Invalid refresh token")    
+    }
 })
 export { registerUser, loginUser, logoutUser, refreshAccessToken };
  

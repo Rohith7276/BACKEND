@@ -19,6 +19,7 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}))
 //this creates a public folder in our server which is used to store files like images and pdf, etc
 app.use(express.static("public"))
 //this is used to store secured information in user browser which is only accessible by our server (used in auth.middleware.js)
+//this makes route req storing cookie
 app.use(cookieParser()) 
 
 //routes import
