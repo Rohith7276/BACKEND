@@ -8,8 +8,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import mongoose from 'mongoose';
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { fullName, email, password, username } = req.body;
-    console.log(fullName, email, password, username);
+    const { fullName, email, password, username } = req.body; 
 
     // here its checking if any one of the following is empty
     //array.some returns true if any of the following condition is true 
@@ -151,7 +150,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: { refreshToken: undefined }
+            $unset: { refreshToken: 1 }
         },
         {
             //this ensures that the updated user is returned
@@ -232,7 +231,7 @@ const changeCurrentUserPassword = asyncHandler(async (req, res) => {
 const getCurrentUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
-        .json(200, req.user, "current user fetched successfully")
+        .json(new ApiResponse(200, req.user, "current user fetched successfully"))
 })
 
 //use file updates separatly because to avoid resending text to the database everytime and directly update only image at a time
@@ -323,7 +322,7 @@ const getUserChannelProfile = asyncHandler(async(req, res) => {
     if (!username?.trim()) {
         throw new ApiError(400, "username is missing")
     }
-    // aggregate takes pipeline of stages
+    // aggregate takes pipeline of stages(we are creating an object tailored to the request :)
     const channel = await User.aggregate([
         //Stage 1: matching the username
         {
@@ -335,7 +334,10 @@ const getUserChannelProfile = asyncHandler(async(req, res) => {
         {
             //This is Subscribers count
             $lookup: {
+                //this is foreign collection and user is the local collection
+                //this subscriptions collection is only for the user related data 
                 from: "subscriptions",
+                //these both matches
                 localField: "_id",
                 foreignField: "channel",
                 as: "subscribers"
@@ -400,10 +402,13 @@ const getWatchHistory = asyncHandler(async(req, res) => {
     const user = await User.aggregate([
         {
             $match: {
+                //we can't send the id directly because mongodb stores id as string (with some other characters) and we need to convert it to object id so we call mongoose to convert it
                 _id: new mongoose.Types.ObjectId(req.user._id)
             }
         },
         {
+        
+            //this lookup is for videos 
             $lookup: {
                 from: "videos",
                 localField: "watchHistory",
@@ -415,6 +420,7 @@ const getWatchHistory = asyncHandler(async(req, res) => {
                             from: "users", 
                             localField: "owner",
                             foreignField: "_id",
+                            //created a field called owner in watch history
                             as: "owner",
                             pipeline:[
                                 {
@@ -430,6 +436,7 @@ const getWatchHistory = asyncHandler(async(req, res) => {
                     {
                         $addFields: {
                             owner: {
+                                //owner field is an array of single element to make front end part ease we send it in variable form
                                 $arrayElemAt: ["$owner", 0]
                                 //$first: "$owner"
                             }
@@ -445,5 +452,6 @@ const getWatchHistory = asyncHandler(async(req, res) => {
         new ApiResponse(200, user[0].watchHistory, "Watch history fetched successfully")
     )
 })
+ 
 
 export { registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentUserPassword, getCurrentUser, updateAccountDetails, updateUserAvatar, updateUserCoverImage, getUserChannelProfile, getWatchHistory };
